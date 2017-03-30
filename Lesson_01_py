@@ -1,0 +1,76 @@
+
+#В файле need_hash.csv через разделитель указаны строки и название хэш-суммы,
+#которую нужно вычислить для каждой строки.
+#Вычислить указанные хэш-суммы и записать их в этот же файл.
+#Для вычисления хэш-сумм строки брать в кодировке исходного файла.
+#Можно работать с файлом как с csv-форматом или просто как с текстовым.
+
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Mar 29 14:04:57 2017
+
+@author: Irkesh
+"""
+import hashlib
+
+#from collections import namedtuple
+
+
+def md5(row):
+    m = hashlib.md5()  
+    try:
+        m.update(row)
+    except SyntaxError:
+        m.update(row.encode('cp1251'))
+    except TypeError:
+        m.update(row.encode('cp1251'))
+    return m.hexdigest()
+
+def sha1(row):
+    m = hashlib.sha1()  
+    try:
+        m.update(row)
+    except SyntaxError:
+        m.update(row.encode('cp1251'))
+    except TypeError:
+        m.update(row.encode('cp1251'))
+    return m.hexdigest()
+
+def sha512(row):
+    m = hashlib.sha512()  
+    try:
+        m.update(row)
+    except SyntaxError:
+        m.update(row.encode('cp1251'))
+    except TypeError:
+        m.update(row.encode('cp1251'))
+    return m.hexdigest()
+
+#Row = namedtuple('Row' ('row', 'hash_type'))
+def hash_calc(line):
+    #print(line)
+    line=line.split(';')
+    #Row = namedtuple('Row' ('row', 'hash_type'))
+    #print(line)
+    if line:
+        row = line[0]
+        hash_type=line[1]
+        if hash_type == 'md5':
+            print(md5(row))
+        elif hash_type == 'sha1':
+            print(sha1(row))
+        elif hash_type == 'sha512':
+            print(sha512(row))
+       
+    else:
+        print('Неверно выводит строку')
+    
+    
+f = open('need_hashes_.csv', 'rb')
+for Li in f:
+    #Li= L.decode('cp1251')
+    Line =Li.decode('utf-8', 'cp1251')
+    print('-'*40)
+    print(Line)
+    hash_calc(Line)
+f.close()
