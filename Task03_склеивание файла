@@ -1,0 +1,71 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Mar 31 15:54:28 2017
+
+@author: Irkesh
+"""
+
+import hashlib
+import os
+import os.path
+
+def glue_file_together(folder, md5_file, glued_file):
+
+    def hash_calc(file):       #считает hash каждого файла по отдельности
+        hasher = hashlib.md5()
+        with open(file, 'rb') as afile:
+            buf = afile.read()
+            hasher.update(buf)
+        return(hasher.hexdigest())
+    
+    def sort_names(md5_file, file_list):
+        
+        sorted_md5_hashes = []
+        for line in md5_file:
+            line = line[:-1]
+            sorted_md5_hashes.append(line) #список упорядоченный hash-summ
+        print(sorted_md5_hashes)    
+            
+        unsorted_md5_hashes=[] 
+        for file in file_list:
+            unsorted_md5_hashes.append(hash_calc(file)) # список hash-summ разупорядоченный
+        print(unsorted_md5_hashes)    
+        unsorted_dict = dict(zip(unsorted_md5_hashes, file_list))
+        print(unsorted_dict)
+        sorted_names=[]
+        for i in range(len(sorted_md5_hashes)):
+            print(sorted_md5_hashes[i])
+            #sorted_names.append(unsorted_md5_hashes[sorted_md5_hashes[i]])
+            a = unsorted_dict[sorted_md5_hashes[i]]
+            sorted_names.append(a)
+            
+        return(sorted_names)    
+    
+    file_list = os.listdir(folder) #список файлов в папке - разупорядоченный
+    os.chdir(folder)
+    md5_file = open(md5_file, 'r')
+    
+    filenames=sort_names(md5_file, file_list)
+    print(filenames)
+    
+    with open(glued_file, 'wb') as outfile:
+        for f_name in filenames:
+            #with open(f_name) as infile:
+                #test
+            with open(f_name, 'rb') as infile:
+                buf = infile.read()
+                outfile.write(buf)
+                
+    outfile.close(  )   
+
+'''
+m=magic.open(magic.MAGIC_NONE)    #пока не устанавливается/погодить
+m.load()
+m.file('gluedfile')
+'''
+if __name__=='__main__':
+    folder = input("укажите директорию с файлами: ")
+    md5 =input("имя файла с хэш-суммами: ")
+    gluedfile = input("укажите имя нового файла: ")
+    print(folder)
+    glue_file_together(folder, md5, gluedfile)
